@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="enabled_checker.class">FivePercent\Component\EnabledChecker\EnabledChecker</parameter>
+        <parameter key="enabled_checker.proxy.class">FivePercent\Bundle\IntegrationBundle\EnabledChecker\EnabledCheckerProxy</parameter>
+        <parameter key="enabled_checker.checker_chain.class">FivePercent\Component\EnabledChecker\Checker\ChainChecker</parameter>
+        <parameter key="enabled_checker.checker.enabled_indicate.class">FivePercent\Component\EnabledChecker\Checker\EnabledIndicateChecker</parameter>
+    </parameters>
+
+    <services>
+        <service id="enabled_checker.checker_chain" class="%enabled_checker.checker_chain.class%" public="false" />
+
+        <service id="enabled_checker.real" class="%enabled_checker.class%">
+            <argument type="service" id="enabled_checker.checker_chain" />
+            <argument type="service" id="logger" on-invalid="false" />
+            <tag name="monolog.logger" channel="enabled_checker" />
+        </service>
+
+        <service id="enabled_checker.proxy" class="%enabled_checker.proxy.class%" abstract="true">
+            <argument type="service" id="service_container" />
+        </service>
+
+        <service id="enabled_checker.checker.enabled_indicate" class="%enabled_checker.checker.enabled_indicate.class%" public="false">
+            <tag name="enabled_checker" priority="-1024" />
+        </service>
+    </services>
+</container>

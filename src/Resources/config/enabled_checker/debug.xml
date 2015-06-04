@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="enabled_checker.checker_registry.class">FivePercent\Bundle\IntegrationBundle\EnabledChecker\Checker\DebugCheckerRegistry</parameter>
+        <parameter key="enabled_checker.debug_command.class">FivePercent\Bundle\IntegrationBundle\Command\EnabledCheckerDebugCommand</parameter>
+    </parameters>
+
+    <services>
+        <service id="enabled_checker.checker_registry" class="%enabled_checker.checker_registry.class%" public="false" />
+
+        <service id="enabled_checker.debug_command" class="%enabled_checker.debug_command.class%">
+            <argument type="service" id="enabled_checker.checker_registry" />
+            <tag name="console.command" />
+        </service>
+    </services>
+</container>

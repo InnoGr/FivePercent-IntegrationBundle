@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="model_transformer.class">FivePercent\Component\ModelTransformer\ModelTransformerManager</parameter>
+        <parameter key="model_transformer.transformable.class">FivePercent\Component\ModelTransformer\Transformer\TransformableModelTransformer</parameter>
+        <parameter key="model_transformer.traversable.class">FivePercent\Component\ModelTransformer\Transformer\TraversableModelTransformer</parameter>
+        <parameter key="model_transformer.doctrine_orm_persistent_collection.class">FivePercent\Bundle\IntegrationBundle\ModelTransformer\Transformer\Doctrine\ORM\PersistentCollectionModelTransformer</parameter>
+    </parameters>
+
+    <services>
+        <service id="model_transformer" class="%model_transformer.class%" />
+
+        <service id="model_transformer.transformable" class="%model_transformer.transformable.class%" public="false">
+            <tag name="model_transformer" />
+        </service>
+
+        <service id="model_transformer.traversable" class="%model_transformer.traversable.class%" public="false">
+            <tag name="model_transformer" />
+        </service>
+    </services>
+</container>

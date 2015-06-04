@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="object_mapper.metadata_loader.annotation.class">FivePercent\Component\ObjectMapper\Metadata\Loader\AnnotationLoader</parameter>
+        <parameter key="object_mapper.metadata_loader.chain.class">FivePercent\Component\ObjectMapper\Metadata\Loader\ChainLoader</parameter>
+        <parameter key="object_mapper.metadata_factory.class">FivePercent\Component\ObjectMapper\Metadata\MetadataFactory</parameter>
+        <parameter key="object_mapper.metadata_factory_cached.class">FivePercent\Component\ObjectMapper\Metadata\CachedMetadataFactory</parameter>
+        <parameter key="object_mapper.strategy_manager.class">FivePercent\Component\ObjectMapper\Strategy\StrategyManager</parameter>
+        <parameter key="object_mapper.class">FivePercent\Component\ObjectMapper\ObjectMapper</parameter>
+    </parameters>
+
+    <services>
+        <service id="object_mapper.metadata_loader.annotation" class="%object_mapper.metadata_loader.annotation.class%" public="false">
+            <argument type="service" id="annotation_reader" />
+        </service>
+
+        <service id="object_mapper.metadata_loader.chain" class="%object_mapper.metadata_loader.chain.class%" public="false">
+            <argument type="collection">
+                <argument type="service" id="object_mapper.metadata_loader.annotation" />
+            </argument>
+        </service>
+
+        <service id="object_mapper.metadata_factory" class="%object_mapper.metadata_factory.class%" public="false">
+            <argument type="service" id="object_mapper.metadata_loader.chain" />
+        </service>
+
+        <service id="object_mapper.metadata_factory_cached" class="%object_mapper.metadata_factory_cached.class%" abstract="true" public="false">
+            <argument /> <!-- Metadata factory delegate -->
+            <argument /> <!-- Cache service -->
+        </service>
+
+        <service id="object_mapper.strategy_manager" class="%object_mapper.strategy_manager.class%" public="false">
+            <factory class="%object_mapper.strategy_manager.class%" method="createDefault" />
+        </service>
+
+        <service id="object_mapper" class="%object_mapper.class%">
+            <argument type="service" id="object_mapper.metadata_factory" />
+            <argument type="service" id="object_mapper.strategy_manager" />
+        </service>
+    </services>
+</container>

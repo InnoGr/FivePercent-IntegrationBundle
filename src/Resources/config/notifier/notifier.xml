@@ -1,0 +1,78 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="notifier.metadata_loader.annotation.class">FivePercent\Component\Notifier\Metadata\Loader\AnnotationLoader</parameter>
+        <parameter key="notifier.metadata_factory.class">FivePercent\Component\Notifier\Metadata\MetadataFactory</parameter>
+        <parameter key="notifier.metadata_factory_cached.class">FivePercent\Component\Notifier\Metadata\CachedMetadataFactory</parameter>
+        <parameter key="notifier.sender_strategy_manager.class">FivePercent\Component\Notifier\SenderStrategy\StrategyManager</parameter>
+        <parameter key="notifier.sender_strategy.immediately.class">FivePercent\Component\Notifier\SenderStrategy\ImmediatelyStrategy</parameter>
+        <parameter key="notifier.sender_strategy.deferred.class">FivePercent\Bundle\IntegrationBundle\Notifier\Strategy\DeferredStrategy</parameter>
+        <parameter key="notifier.object_data_extractor.transformation_and_normalization.class">FivePercent\Component\Notifier\ObjectData\TransformationAndNormalizationExtractor</parameter>
+        <parameter key="notifier.sender.amqp_lazy.exchange_factory.class">FivePercent\Bundle\IntegrationBundle\Notifier\Sender\Amqp\ConfigExchangeFactory</parameter>
+        <parameter key="notifier.sender.amqp_lazy.class">FivePercent\Component\Notifier\Sender\Amqp\AmqpLazySender</parameter>
+        <parameter key="notifier.class">FivePercent\Component\Notifier\Notifier</parameter>
+        <parameter key="event_dispatcher.notifier_proxy.class">FivePercent\Component\Notifier\EventDispatcher\EventDispatcherNotifierProxy</parameter>
+    </parameters>
+
+    <services>
+        <service id="notifier.metadata_loader.annotation" class="%notifier.metadata_loader.annotation.class%" public="false">
+            <argument type="service" id="annotation_reader" />
+        </service>
+
+        <service id="notifier.metadata_factory" class="%notifier.metadata_factory.class%" public="false">
+            <argument type="service" id="notifier.metadata_loader.annotation" />
+        </service>
+
+        <service id="notifier.metadata_factory_cached" class="%notifier.metadata_factory_cached.class%" public="false" abstract="true">
+            <argument /> <!-- Metadata factory delegate -->
+            <argument /> <!-- Cache service -->
+        </service>
+
+        <service id="notifier.sender_strategy_manager" class="%notifier.sender_strategy_manager.class%" public="false" />
+
+        <service id="notifier.sender_strategy.immediately" class="%notifier.sender_strategy.immediately.class%" public="false">
+            <tag name="notifier.sender.strategy" key="immediately" />
+        </service>
+
+        <service id="notifier.sender_strategy.deferred" class="%notifier.sender_strategy.deferred.class%">
+            <tag name="notifier.sender.strategy" key="deferred" />
+            <tag name="kernel.event_subscriber" />
+        </service>
+
+        <service id="notifier.object_data_extractor.transformation_and_normalization" class="%notifier.object_data_extractor.transformation_and_normalization.class%" abstract="true" public="false">
+            <argument type="service" id="model_transformer" />
+            <argument type="service" id="model_normalizer" />
+        </service>
+
+        <service id="notifier.sender.amqp_lazy.exchange_factory" class="%notifier.sender.amqp_lazy.exchange_factory.class%" abstract="true" public="false">
+            <argument /> <!-- Host -->
+            <argument /> <!-- Port -->
+            <argument /> <!-- VHost -->
+            <argument /> <!-- Login -->
+            <argument /> <!-- Password -->
+            <argument /> <!-- Exchange name -->
+            <argument />
+        </service>
+
+        <service id="notifier.sender.amqp_lazy" class="%notifier.sender.amqp_lazy.class%" abstract="true" public="false">
+            <argument type="service" id="notifier.sender.amqp_lazy.exchange_factory" />
+        </service>
+
+        <service id="notifier" class="%notifier.class%">
+            <argument type="service" id="notifier.metadata_factory" />
+            <argument type="service" id="notifier.sender_strategy_manager" />
+            <argument /> <!-- Sender: sets in CoreExtension -->
+            <argument /> <!-- ObjectDataExtractor: sets in CoreExtension -->
+        </service>
+
+        <service id="event_dispatcher.notifier_proxy" class="%event_dispatcher.notifier_proxy.class%" abstract="true">
+            <argument /> <!-- Symfony Event Dispatcher -->
+            <argument type="service" id="notifier" />
+            <argument type="collection" /> <!-- Symfony2 event names for disable notifications -->
+        </service>
+    </services>
+</container>

@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="cache.array.class">FivePercent\Component\Cache\ArrayCache</parameter>
+        <parameter key="cache.chain.class">FivePercent\Component\Cache\ChainCache</parameter>
+        <parameter key="cache.clearer.class">FivePercent\Component\Cache\CacheClearer</parameter>
+        <parameter key="expression_language.parser.cache.class">FivePercent\Component\Cache\ExpressionLanguage\ParserCache</parameter>
+    </parameters>
+
+    <services>
+        <service id="cache.array" class="%cache.array.class%" abstract="true" public="false" />
+
+        <service id="cache.chain" class="%cache.chain.class%" />
+
+        <service id="cache.clearer" class="%cache.clearer.class%">
+            <argument type="service" id="cache" />
+            <tag name="kernel.cache_clearer" />
+        </service>
+
+        <service id="expression_language.parser.cache" class="%expression_language.parser.cache.class%">
+            <argument type="service" id="cache" />
+        </service>
+    </services>
+</container>

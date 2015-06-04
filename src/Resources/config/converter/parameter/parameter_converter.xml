@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="converter.parameter.class">FivePercent\Component\Converter\Parameter\ParameterConverterManager</parameter>
+        <parameter key="converter.parameter.chain.class">FivePercent\Component\Converter\Parameter\Converters\ChainParameterConverter</parameter>
+        <parameter key="converter.parameter.symfony_request.class">FivePercent\Component\Converter\Parameter\Converters\SymfonyRequestParameterConverter</parameter>
+    </parameters>
+
+    <services>
+        <service id="converter.parameter" class="%converter.parameter.class%" />
+
+        <service id="converter.parameter.chain.abstract" class="%converter.parameter.chain.class%" abstract="true" public="false" />
+
+        <service id="converter.parameter.symfony_request" class="%converter.parameter.symfony_request.class%" public="false">
+            <argument type="service" id="service_container" />
+            <tag name="converter.parameter" />
+        </service>
+    </services>
+</container>

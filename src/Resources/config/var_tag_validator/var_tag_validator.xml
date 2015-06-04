@@ -1,0 +1,57 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="validator.var_tag.constraint_factory.integer.class">FivePercent\Component\VarTagValidator\Constraint\Factory\IntegerConstraintFactory</parameter>
+        <parameter key="validator.var_tag.constraint_factory.double.class">FivePercent\Component\VarTagValidator\Constraint\Factory\DoubleConstraintFactory</parameter>
+        <parameter key="validator.var_tag.constraint_factory.string.class">FivePercent\Component\VarTagValidator\Constraint\Factory\StringConstraintFactory</parameter>
+        <parameter key="validator.var_tag.constraint_factory.scalar.class">FivePercent\Component\VarTagValidator\Constraint\Factory\ScalarConstraintFactory</parameter>
+        <parameter key="validator.var_tag.constraint_factory.array.class">FivePercent\Component\VarTagValidator\Constraint\Factory\ArrayConstraintFactory</parameter>
+        <parameter key="validator.var_tag.constraint_factory_registry.class">FivePercent\Component\VarTagValidator\Constraint\FactoryRegistry</parameter>
+        <parameter key="validator.var_tag.metadata_factory.class">FivePercent\Component\VarTagValidator\Metadata\MetadataFactory</parameter>
+        <parameter key="validator.var_tag.metadata_factory_cached.class">FivePercent\Component\VarTagValidator\Metadata\CachedMetadataFactory</parameter>
+        <parameter key="validator.var_tag.class">FivePercent\Component\VarTagValidator\VarTagValidator</parameter>
+    </parameters>
+
+    <services>
+        <service id="validator.var_tag.constraint_factory.integer" class="%validator.var_tag.constraint_factory.integer.class%" public="false">
+            <tag name="validator.var_tag.constraint_factory" type="integer" />
+            <tag name="validator.var_tag.constraint_factory" type="int" />
+        </service>
+
+        <service id="validator.var_tag.constraint_factory.double" class="%validator.var_tag.constraint_factory.double.class%" public="false">
+            <tag name="validator.var_tag.constraint_factory" type="double" />
+            <tag name="validator.var_tag.constraint_factory" type="float" />
+        </service>
+
+        <service id="validator.var_tag.constraint_factory.string" class="%validator.var_tag.constraint_factory.string.class%" public="false">
+            <tag name="validator.var_tag.constraint_factory" type="string" />
+        </service>
+
+        <service id="validator.var_tag.constraint_factory.scalar" class="%validator.var_tag.constraint_factory.scalar.class%" public="false">
+            <tag name="validator.var_tag.constraint_factory" type="scalar" />
+        </service>
+
+        <service id="validator.var_tag.constraint_factory.array" class="%validator.var_tag.constraint_factory.array.class%" public="false">
+            <tag name="validator.var_tag.constraint_factory" type="array" />
+        </service>
+
+        <service id="validator.var_tag.constraint_factory_registry" class="%validator.var_tag.constraint_factory_registry.class%" public="false" />
+
+        <service id="validator.var_tag.metadata_factory" class="%validator.var_tag.metadata_factory.class%" public="false" />
+
+        <service id="validator.var_tag.metadata_factory_cached" class="%validator.var_tag.metadata_factory_cached.class%" public="false" abstract="true">
+            <argument type="service" id="validator.var_tag.metadata_factory" />
+            <argument type="service" id="cache" />
+        </service>
+
+        <service id="validator.var_tag" class="%validator.var_tag.class%">
+            <argument type="service" id="validator" /> <!-- Parameter can be replaced in VarTagValidatorPass -->
+            <argument type="service" id="validator.var_tag.metadata_factory" />
+            <argument type="service" id="validator.var_tag.constraint_factory_registry" />
+        </service>
+    </services>
+</container>

@@ -1,0 +1,33 @@
+{
+    "name": "fivepercent/integration-bundle",
+    "description": "Integration bundle for integrate FivePercent libraries and Symfony2 Application",
+    "keywords": [],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vitaliy Zhuk",
+            "email": "zhuk2205@gmail.com"
+        }
+    ],
+
+    "require": {
+        "php": ">=5.4",
+        "symfony/symfony": "~2.3",
+        "fivepercent/cache": "~1.0"
+    },
+
+    "suggest": {
+        "fivepercent/enabled-checker": "For integrate EnabledChecker library",
+        "fivepercent/object-mapper": "For integrate ObjectMapper library",
+        "fivepercent/object-security": "For integrate ObjectSecurity library",
+        "fivepercent/var-tag-validator": "For integrate VarTagValidator library",
+        "fivepercent/notifier": "For integrate Notifier library",
+        "fivepercent/converter": "For integrate converter library",
+        "fivepercent/transactional": "For integrate transactional library"
+    },
+
+    "autoload": {
+        "psr-4": { "FivePercent\\Bundle\\IntegrationBundle\\": "src/" }
+    }
+}

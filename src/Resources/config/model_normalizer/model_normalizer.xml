@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="model_normalizer.class">FivePercent\Component\ModelNormalizer\ModelNormalizerManager</parameter>
+        <parameter key="model_normalizer.normalizable.class">FivePercent\Component\ModelNormalizer\Normalizer\NormalizableModelNormalizer</parameter>
+        <parameter key="model_normalizer.traversable.class">FivePercent\Component\ModelNormalizer\Normalizer\TraversableModelNormalizer</parameter>
+        <parameter key="model_normalizer.datetime.class">FivePercent\Component\ModelNormalizer\Normalizer\DateTimeNormalizer</parameter>
+        <parameter key="model_normalizer.money.class">FivePercent\Component\ModelNormalizer\Normalizer\MoneyNormalizer</parameter>
+    </parameters>
+
+    <services>
+        <service id="model_normalizer" class="%model_normalizer.class%" />
+
+        <service id="model_normalizer.normalizable" class="%model_normalizer.normalizable.class%" public="false">
+            <tag name="model_normalizer" />
+        </service>
+
+        <service id="model_normalizer.traversable" class="%model_normalizer.traversable.class%" public="false">
+            <tag name="model_normalizer" />
+        </service>
+
+        <service id="model_normalizer.datetime" class="%model_normalizer.datetime.class%" public="false">
+            <tag name="model_normalizer" />
+        </service>
+
+        <service id="model_normalizer.money" class="%model_normalizer.money.class%" public="false" abstract="true">
+            <tag name="model_normalizer" />
+        </service>
+    </services>
+</container>

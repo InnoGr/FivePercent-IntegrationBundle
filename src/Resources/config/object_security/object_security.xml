@@ -1,0 +1,82 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="object_security.util.expression_language.class">FivePercent\Bundle\IntegrationBundle\ExpressionLanguage\ContainerAwareExpressionLanguage</parameter>
+
+        <parameter key="object_security.metadata_loader.annotation.class">FivePercent\Component\ObjectSecurity\Metadata\Loader\AnnotationLoader</parameter>
+        <parameter key="object_security.metadata_loader.chain.class">FivePercent\Component\ObjectSecurity\Metadata\Loader\ChainLoader</parameter>
+        <parameter key="object_security.metadata_factory.class">FivePercent\Component\ObjectSecurity\Metadata\MetadataFactory</parameter>
+        <parameter key="object_security.metadata_factory_cached.class">FivePercent\Component\ObjectSecurity\Metadata\CachedMetadataFactory</parameter>
+
+        <parameter key="object_security.rule_voter.class">FivePercent\Component\ObjectSecurity\Rule\Voter\ChainRuleVoter</parameter>
+        <parameter key="object_security.rule_voter.role.class">FivePercent\Component\ObjectSecurity\Rule\Voter\RoleRuleVoter</parameter>
+        <parameter key="object_security.rule_voter.callback.class">FivePercent\Component\ObjectSecurity\Rule\Voter\CallbackRuleVoter</parameter>
+
+        <parameter key="object_security.rule_checker.strategy_manager.class">FivePercent\Component\ObjectSecurity\Rule\Checker\Strategy\StrategyManager</parameter>
+        <parameter key="object_security.rule_checker.class">FivePercent\Component\ObjectSecurity\Rule\Checker\Checker</parameter>
+
+        <parameter key="object_security.authorization_checker.class">FivePercent\Component\ObjectSecurity\ObjectSecurityAuthorizationChecker</parameter>
+    </parameters>
+
+    <services>
+        <!-- Utilities -->
+        <service id="object_security.util.expression_language" class="%object_security.util.expression_language.class%" public="false">
+            <argument type="service" id="service_container" />
+            <argument type="service" id="expression_language.parser.cache" />
+        </service>
+
+        <!-- Security metadata -->
+        <service id="object_security.metadata_loader.annotation" class="%object_security.metadata_loader.annotation.class%" public="false">
+            <argument type="service" id="annotation_reader" />
+        </service>
+
+        <service id="object_security.metadata_loader" class="%object_security.metadata_loader.chain.class%" public="false">
+            <argument type="collection">
+                <argument type="service" id="object_security.metadata_loader.annotation" />
+            </argument>
+        </service>
+
+        <service id="object_security.metadata_factory" class="%object_security.metadata_factory.class%" public="false">
+            <argument type="service" id="object_security.metadata_loader" />
+        </service>
+
+        <service id="object_security.metadata_factory_cached" class="%object_security.metadata_factory_cached.class%" public="false" abstract="true">
+            <argument /> <!-- Metadata factory delegate -->
+            <argument /> <!-- Cache system -->
+        </service>
+
+        <!-- Security rule voters -->
+        <service id="object_security.rule_voter" class="%object_security.rule_voter.class%" public="false" />
+
+        <service id="object_security.rule_voter.role" class="%object_security.rule_voter.role.class%" public="false">
+            <argument type="service" id="security.authorization_checker" />
+            <argument type="service" id="object_security.util.expression_language" />
+            <tag name="object_security.rule_voter" />
+        </service>
+
+        <service id="object_security.rule_voter.callback" class="%object_security.rule_voter.callback.class%" public="false">
+            <argument type="service" id="object_security.util.expression_language" />
+            <tag name="object_security.rule_voter" />
+        </service>
+
+        <!-- Security rule checker -->
+        <service id="object_security.rule_checker.strategy_manager" class="%object_security.rule_checker.strategy_manager.class%" public="false">
+            <factory class="%object_security.rule_checker.strategy_manager.class%" method="createDefault" />
+        </service>
+
+        <service id="object_security.rule_checker" class="%object_security.rule_checker.class%" public="false">
+            <argument type="service" id="object_security.rule_voter" />
+            <argument type="service" id="object_security.rule_checker.strategy_manager" />
+        </service>
+
+        <!-- Service for checker access to class methods -->
+        <service id="object_security.authorization_checker" class="%object_security.authorization_checker.class%">
+            <argument type="service" id="object_security.metadata_factory" />
+            <argument type="service" id="object_security.rule_checker" />
+        </service>
+    </services>
+</container>

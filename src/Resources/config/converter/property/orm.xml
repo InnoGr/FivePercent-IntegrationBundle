@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="converter.property.orm.expression_language.class">FivePercent\Bundle\IntegrationBundle\ExpressionLanguage\ContainerAwareExpressionLanguage</parameter>
+        <parameter key="converter.property.orm.reader.class">FivePercent\Component\Converter\Property\Converters\ORM\ORMPropertyConverterAnnotationReader</parameter>
+        <parameter key="converter.property.orm.reader_cached.class">FivePercent\Component\Converter\Property\Converters\ORM\ORMPropertyConverterCachedReader</parameter>
+        <parameter key="converter.property.orm.class">FivePercent\Component\Converter\Property\Converters\ORM\ORMPropertyConverter</parameter>
+    </parameters>
+
+    <services>
+        <service id="converter.property.orm.reader" class="%converter.property.orm.reader.class%" public="false">
+            <argument type="service" id="annotation_reader" />
+        </service>
+
+        <service id="converter.property.orm.reader_cached" class="%converter.property.orm.reader_cached.class%" abstract="true" public="false">
+            <argument /> <!-- Reader delegate -->
+            <argument /> <!-- Cache system -->
+        </service>
+
+        <service id="converter.property.orm.expression_language" class="%converter.property.orm.expression_language.class%" public="false">
+            <argument type="service" id="service_container" />
+            <argument type="service" id="expression_language.parser.cache" />
+        </service>
+
+        <service id="converter.property.orm" class="%converter.property.orm.class%" public="false">
+            <argument type="service" id="doctrine" />
+            <argument type="service" id="converter.property.orm.reader" />
+            <argument type="service" id="converter.property.orm.expression_language" />
+            <tag name="converter.property" />
+        </service>
+    </services>
+</container>
